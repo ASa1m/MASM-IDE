@@ -1,0 +1,69 @@
+include irvine32.inc
+
+.data
+
+str1 BYTE "Please enter two numbers for Fast Multiplication:",0
+str2 BYTE "The result is:",0
+var1   DWORD 0
+var2 DWORD 32               
+user1 DWORD ?                            ;variable for 1st number input                                                     
+user2 DWORD ?                            ;variable for 2nd number input                
+result DWORD 0
+
+.code
+
+main PROC
+
+call Clrscr                                        ;clears the screen
+
+mov edx,OFFSET str1                       
+call WriteString                                ; str1 entered 
+call Crlf                                           ; new line
+call ReadInt                                     ; 1st input from the user
+mov user1,eax                                
+mov ebx,eax                                   ;1st input stored in EBX
+call ReadInt                                     ;2nd input from the user
+mov user2,eax                                ;2nd input stored in EAX
+
+mov ecx,32                                     ; Loop counter
+mov esi,0                                        ; ESI initialized to zero
+
+L1:
+      shr eax,1                            ;right-shift 2nd number. It             ;checks CF and in which position ;does the bit ‘1’ appears 
+      JC L2                                 ; Jump to L2 if CF=1
+      JNC L3                               ; Jump to L3 if CF=0
+
+
+L2:                                            ; Loop for CF=1
+      mov var1,ecx                       ;temporarily stored ECX in var1
+      mov var2,32                            ; var2=32
+      sub var2,ecx                            ; var2=var2-ECX
+      mov ecx,var2      
+      mov var2, ebx                         ; stored original value of ;EBX(i.e. 1st number)
+      shl ebx,cl                                 ; Shift-left 1st no. by CL
+      mov ecx,var1                           ; restore value of ECX
+      add result,ebx                          
+      mov esi,result                          ; store result in ESI register
+      mov ebx,var2                          ; restore EBX to 1st number
+     
+     Loop L1
+           call Crlf
+           mov edx,OFFSET str2
+           call WriteString
+           mov eax,esi                       ; move result in EAX
+           call WriteDec                      ; display in Decimal format
+ 
+
+L3:                                                ;Loop for CF=0
+
+    Loop L1                                     ;do nothing. Return to L1
+           call Crlf
+           mov edx,OFFSET str2
+           call WriteString
+           mov eax,esi                        ; move result in EAX      
+           call WriteDec                      ; display in Decimal format
+    
+
+exit
+main ENDP
+END main
